@@ -5,7 +5,7 @@ import normalizePollinationsText from "./helper.js";
 import translateToVi from "./translateToVNese.js";
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 
 app.use(cors());
 app.use(express.json());
@@ -77,3 +77,4 @@ function isEnglish(text) {
   const viChars = /[àáạảãâăèéẹẻẽêìíịỉĩòóọỏõôơùúụủũưỳýỵỷỹđ]/i;
   return !viChars.test(text);
 }
+
