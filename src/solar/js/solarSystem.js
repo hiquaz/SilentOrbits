@@ -317,11 +317,11 @@ function onMouseClick(event) {
       // Delay một chút để thấy hiệu ứng rồi chuyển trang
       setTimeout(() => {
         // Chuyển trang khi click vào Trái Đất
-        window.location.href = './src/explore/explore.html'; // Thay đổi URL theo nhu cầu
+        window.location.href = '../explore/explore.html'; // Thay đổi URL theo nhu cầu
       }, 200);
     } else {
       // Chuyển trang ngay nếu không có hiệu ứng
-      window.location.href = './src/explore/explore.html';
+      window.location.href = '../explore/explore.html';
     }
     
     // Ngăn sự kiện click lan ra các phần tử khác
@@ -358,3 +358,4 @@ window.addEventListener("resize", () => {
 });
 
 //////////////////////////////////////
+
