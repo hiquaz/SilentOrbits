@@ -98,7 +98,7 @@
             .replace(/ /g, "%20") // xóa dấu
             .toLowerCase();
 
-          const res = await fetch("http://localhost:3001/chat", {
+          const res = await fetch("https://hiquaz.github.io/SilentOrbits/chat", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -151,3 +151,4 @@
     </script>
   </body>
 </html>
+
