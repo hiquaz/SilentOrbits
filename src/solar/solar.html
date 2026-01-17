@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Solar System</title>
+
+    <style>
+      body {
+        overflow: hidden;
+        margin: 0;
+      }
+
+      #chat {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        width: 300px;
+        /*  background: rgba(0, 0, 0, 0.75); */
+        color: white;
+        font-family: monospace;
+        border-radius: 8px;
+        padding: 10px;
+        z-index: 999;
+      }
+
+      #chat input {
+        width: 100%;
+        margin-top: 6px;
+        padding: 4px;
+        background: #111;
+        color: white;
+        border: 1px solid #444;
+      }
+
+      #chatLog {
+        background: white;
+        color: #000;
+        white-space: pre-wrap;
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        overflow-y: auto;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+      }
+
+      #chatLog.hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(10px);
+      }
+    </style>
+
+    <link rel="icon" type="image/png" href="./image/solar-system.png" />
+    <script src="./min.js/dat.gui.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  </head>
+
+  <body>
+    <!-- Three.js scene -->
+    <script src="./js/solarSystem.js" type="module"></script>
+    <div>
+      <a
+        href="/src/quiz/index.html"
+        class="bg-blue-600 inline-block exo px-8 py-4 rounded-full hover:bg-green-800"
+      >
+        Quiz
+      </a>
+    </div>
+    <!-- Chat UI -->
+    <div id="chat" style="height: 45%; bottom: 220px; width: 50%">
+      <div id="chatLog" class="hidden" style="height: 450px">AI ready.\n</div>
+      <input id="chatInput" placeholder="Ask about space and press Enter" />
+    </div>
+
+    <script>
+      
+      const input = document.getElementById("chatInput");
+      const log = document.getElementById("chatLog");
+
+      input.addEventListener("keydown", async (e) => {
+        if (e.key !== "Enter") return;
+        if (!input.value.trim()) return;
+
+        const prompt = input.value;
+        input.value = "";
+
+        log.textContent += `> ${prompt}\nAI: thinking...\n`;
+        log.scrollTop = log.scrollHeight;
+
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15000);
+
+          const safePrompt = prompt
+            .normalize("NFC") // tách dấu
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/ /g, "%20") // xóa dấu
+            .toLowerCase();
+
+          const res = await fetch("http://localhost:3001/chat", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              messages: [
+                {
+                  role: "user",
+                  content: safePrompt,
+                },
+              ],
+            }),
+          });
+
+          clearTimeout(timeout);
+
+          if (!res.ok) throw new Error("HTTP " + res.status);
+
+          const text = await res.json();
+          let content = text.choices[0].message.content;
+          log.innerHTML = marked.parse(content);
+        } catch (err) {
+          log.textContent += "AI timeout / unavailable.\n\n";
+          console.error(err);
+        }
+
+        log.scrollTop = log.scrollHeight;
+      });
+    </script>
+
+    <script>
+      const chat = document.getElementById("chat");
+      const chatInput = document.getElementById("chatInput");
+      const chatLog = document.getElementById("chatLog");
+
+      // Focus input → hiện chat log
+      chatInput.addEventListener("focus", () => {
+        chatLog.classList.remove("hidden");
+      });
+
+      // Click ra ngoài → ẩn chat log
+      document.addEventListener("click", (e) => {
+        if (!chat.contains(e.target)) {
+          chatLog.classList.add("hidden");
+        }
+      });
+
+      // // Tránh click vào chatLog bị coi là click outside
+      // chatLog.addEventListener("click", (e) => {
+      //   e.stopPropagation();
+      // });
+    </script>
+  </body>
+</html>

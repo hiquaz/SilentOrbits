@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbit Quiz</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        /* background: linear-gradient(135deg, #6a11cb, #2575fc); */
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #333;
+        background: url("./img/mobile-space-bg.png");
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+        background-position: center center;
+        background-color: #71c9e3;
+      }
+
+      .quiz-container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        width: 90%;
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      .question {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #444;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .option {
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f9f9f9;
+        font-size: 1.1em;
+      }
+
+      .option:hover {
+        background: #6a11cb;
+        color: #fff;
+        border-color: #6a11cb;
+        transform: scale(1.02);
+      }
+
+      .next-button {
+        width: 100%;
+        padding: 15px;
+        margin-top: 20px;
+        background: #2575fc;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .next-button:hover {
+        background: #6a11cb;
+      }
+
+      .timer {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        color: #ff4757;
+        font-weight: bold;
+      }
+
+      .score {
+        font-size: 2em;
+        margin-top: 20px;
+        color: #2ed573;
+      }
+
+      .result {
+        text-align: left;
+        margin-top: 20px;
+        max-height: 300px;
+        /* Limit height and make scrollable */
+        overflow-y: auto;
+        /* Add scrollbar if content overflows */
+        padding-right: 10px;
+        /* Add space for scrollbar */
+      }
+
+      .result-item {
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 10px;
+        background: #f1f2f6;
+      }
+
+      .correct {
+        color: #2ed573;
+      }
+
+      .incorrect {
+        color: #ff4757;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .quiz-container {
+          padding: 20px;
+        }
+
+        .question {
+          font-size: 1.2em;
+        }
+
+        .option {
+          font-size: 1em;
+        }
+
+        .next-button {
+          font-size: 1em;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="quiz-container" id="basic">
+      <h2>KIẾN THỨC CƠ BẢN VỀ RÁC NGOÀI VŨ TRỤ</h2>
+      <div id="timer" class="timer">Thời gian: 60s</div>
+      <div id="question-container" class="question-container">
+        <div id="question" class="question"></div>
+        <div id="options" class="options"></div>
+        <button id="next-button" class="next-button">Tiếp</button>
+      </div>
+      <div id="result-container" class="result-container" style="display: none">
+        <div id="score" class="score"></div>
+        <div id="result" class="result"></div>
+        <button id="back" class="next-button">Quay lại</button>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          question: "Rác vũ trụ là gì?",
+          options: [
+            "Các thiên thạch rơi xuống Trái Đất",
+            "Các vật thể không còn hoạt động bay quanh Trái Đất",
+            "Các hành tinh nhỏ trong hệ Mặt Trời",
+            "Các đám mây trong không gian",
+          ],
+          answer: "Các vật thể không còn hoạt động bay quanh Trái Đất",
+        },
+        {
+          question: "Nguồn gốc chính của rác vũ trụ là gì?",
+          options: [
+            "Thiên thạch tự nhiên",
+            "Tàu thăm dò ngoài hành tinh",
+            "Vệ tinh và tên lửa do con người phóng",
+            "Sao chổi",
+          ],
+          answer: "Vệ tinh và tên lửa do con người phóng",
+        },
+        {
+          question: "Rác vũ trụ thường tồn tại ở đâu?",
+          options: [
+            "Trong khí quyển Trái Đất",
+            "Dưới đáy đại dương",
+            "Trong quỹ đạo quanh Trái Đất",
+            "Trên Mặt Trăng",
+          ],
+          answer: "Trong quỹ đạo quanh Trái Đất",
+        },
+        {
+          question: "Vật thể nào sau đây được coi là rác vũ trụ?",
+          options: [
+            "Vệ tinh đang hoạt động",
+            "Tên lửa chưa phóng",
+            "Mảnh vỡ từ vệ tinh hỏng",
+            "Trạm không gian đang sử dụng",
+          ],
+          answer: "Mảnh vỡ từ vệ tinh hỏng",
+        },
+        {
+          question: "Tại sao rác vũ trụ nguy hiểm?",
+          options: [
+            "Vì nó phát sáng mạnh",
+            "Vì có thể va chạm với vệ tinh và tàu vũ trụ",
+            "Vì làm Trái Đất nóng lên",
+            "Vì gây mưa axit",
+          ],
+          answer: "Vì có thể va chạm với vệ tinh và tàu vũ trụ",
+        },
+        {
+          question: "Kích thước của rác vũ trụ có thể nhỏ đến mức nào?",
+          options: ["Vài mét", "Vài centimet", "Cỡ hạt bụi", "Cỡ một ngôi nhà"],
+          answer: "Cỡ hạt bụi",
+        },
+        {
+          question: "Rác vũ trụ di chuyển với tốc độ như thế nào?",
+          options: [
+            "Rất chậm",
+            "Bằng tốc độ máy bay",
+            "Rất nhanh, hàng chục nghìn km/h",
+            "Đứng yên",
+          ],
+          answer: "Rất nhanh, hàng chục nghìn km/h",
+        },
+        {
+          question: "Một mảnh rác vũ trụ nhỏ cũng có thể gây nguy hiểm vì?",
+          options: [
+            "Nhiệt độ thấp",
+            "Trọng lượng nhẹ",
+            "Tốc độ di chuyển rất lớn",
+            "Màu sắc phản chiếu",
+          ],
+          answer: "Tốc độ di chuyển rất lớn",
+        },
+        {
+          question:
+            "Hiện tượng va chạm dây chuyền tạo ra nhiều rác vũ trụ hơn gọi là gì?",
+          options: [
+            "Hiệu ứng nhà kính",
+            "Hiệu ứng Kessler",
+            "Hiệu ứng Doppler",
+            "Hiệu ứng quang điện",
+          ],
+          answer: "Hiệu ứng Kessler",
+        },
+        {
+          question: "Thiết bị nào giúp theo dõi rác vũ trụ?",
+          options: [
+            "La bàn",
+            "Radar và kính thiên văn",
+            "Nhiệt kế",
+            "Vệ tinh thời tiết",
+          ],
+          answer: "Radar và kính thiên văn",
+        },
+        {
+          question: "Quốc gia nào phóng nhiều vệ tinh nhất hiện nay?",
+          options: ["Việt Nam", "Mỹ", "Úc", "Brazil"],
+          answer: "Mỹ",
+        },
+        {
+          question: "Rác vũ trụ có thể ảnh hưởng đến lĩnh vực nào?",
+          options: [
+            "Thông tin liên lạc",
+            "Dự báo thời tiết",
+            "Định vị GPS",
+            "Tất cả các lĩnh vực trên",
+          ],
+          answer: "Tất cả các lĩnh vực trên",
+        },
+        {
+          question:
+            "Khi rác vũ trụ rơi vào khí quyển Trái Đất, điều gì thường xảy ra?",
+          options: [
+            "Tồn tại nguyên vẹn",
+            "Bị đóng băng",
+            "Bốc cháy và tan rã",
+            "Bay ngược lên",
+          ],
+          answer: "Bốc cháy và tan rã",
+        },
+        {
+          question: "Tổ chức nào của châu Âu nghiên cứu rác vũ trụ?",
+          options: ["NASA", "ESA", "WHO", "UNICEF"],
+          answer: "ESA",
+        },
+        {
+          question: "Vì sao không thể thu gom toàn bộ rác vũ trụ dễ dàng?",
+          options: [
+            "Vì rác quá nặng",
+            "Vì rác bay nhanh và phân tán",
+            "Vì rác không tồn tại",
+            "Vì thiếu năng lượng mặt trời",
+          ],
+          answer: "Vì rác bay nhanh và phân tán",
+        },
+        {
+          question: "Biện pháp nào giúp giảm rác vũ trụ?",
+          options: [
+            "Phóng thêm vệ tinh",
+            "Để vệ tinh hỏng tự do",
+            "Thiết kế vệ tinh tự rơi khỏi quỹ đạo",
+            "Tăng tốc độ tên lửa",
+          ],
+          answer: "Thiết kế vệ tinh tự rơi khỏi quỹ đạo",
+        },
+        {
+          question: "Rác vũ trụ có thể va chạm với đối tượng nào?",
+          options: [
+            "Tàu vũ trụ",
+            "Vệ tinh",
+            "Trạm không gian",
+            "Tất cả các đối tượng trên",
+          ],
+          answer: "Tất cả các đối tượng trên",
+        },
+        {
+          question: "Trạm Vũ trụ Quốc tế (ISS) đã từng tránh rác vũ trụ chưa?",
+          options: [
+            "Chưa bao giờ",
+            "Đã nhiều lần",
+            "Chỉ một lần",
+            "Không tồn tại rác vũ trụ",
+          ],
+          answer: "Đã nhiều lần",
+        },
+        {
+          question: "Rác vũ trụ nhỏ có thể gây thủng vật liệu vì?",
+          options: [
+            "Nhiệt độ cao",
+            "Áp suất thấp",
+            "Tốc độ va chạm lớn",
+            "Từ trường mạnh",
+          ],
+          answer: "Tốc độ va chạm lớn",
+        },
+        {
+          question: "Một vệ tinh hết nhiệm vụ nên làm gì?",
+          options: [
+            "Tiếp tục bay mãi",
+            "Tự hủy trong khí quyển",
+            "Tăng độ cao quỹ đạo",
+            "Ngừng phát tín hiệu",
+          ],
+          answer: "Tự hủy trong khí quyển",
+        },
+        {
+          question:
+            "Rác vũ trụ ảnh hưởng gián tiếp đến đời sống con người qua?",
+          options: [
+            "Mất tín hiệu internet",
+            "Lỗi GPS",
+            "Gián đoạn liên lạc",
+            "Tất cả các đáp án trên",
+          ],
+          answer: "Tất cả các đáp án trên",
+        },
+        {
+          question: "Công nghệ nào đang được nghiên cứu để dọn rác vũ trụ?",
+          options: [
+            "Lưới và robot",
+            "Bom hạt nhân",
+            "Tên lửa thông thường",
+            "Động cơ diesel",
+          ],
+          answer: "Lưới và robot",
+        },
+        {
+          question: "Rác vũ trụ có tăng theo thời gian không?",
+          options: [
+            "Không thay đổi",
+            "Giảm dần",
+            "Tăng lên",
+            "Biến mất hoàn toàn",
+          ],
+          answer: "Tăng lên",
+        },
+        {
+          question: "Ý thức nào giúp giảm rác vũ trụ trong tương lai?",
+          options: [
+            "Phóng càng nhiều càng tốt",
+            "Không cần quản lý",
+            "Phóng có trách nhiệm",
+            "Bỏ qua an toàn",
+          ],
+          answer: "Phóng có trách nhiệm",
+        },
+        {
+          question: "Rác vũ trụ là vấn đề của riêng một quốc gia?",
+          options: ["Đúng", "Sai", "Chỉ các nước lớn", "Chỉ nước có vệ tinh"],
+          answer: "Sai",
+        },
+      ];
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let timeLeft = 60;
+      let timer;
+      const selectedQuestions = getRandomQuestions(questions, 20); // lấy 20 âu hỏi ngẫu nhiên
+      const userAnswers = []; // Store user's answers
+
+      const timerElement = document.getElementById("timer");
+      const questionElement = document.getElementById("question");
+      const optionsElement = document.getElementById("options");
+      const nextButton = document.getElementById("next-button");
+      const resultContainer = document.getElementById("result-container");
+      const scoreElement = document.getElementById("score");
+      const resultElement = document.getElementById("result");
+      const backButton = document.getElementById("back");
+      const basicQuizz = document.getElementById("basic");
+
+      function getRandomQuestions(questions, count) {
+        const shuffled = questions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+      }
+
+      function displayQuestion() {
+        const question = selectedQuestions[currentQuestionIndex];
+        questionElement.textContent = question.question;
+        optionsElement.innerHTML = "";
+        question.options.forEach((option) => {
+          const button = document.createElement("div");
+          button.textContent = option;
+          button.classList.add("option");
+          button.addEventListener("click", () =>
+            selectAnswer(option, question.answer)
+          );
+          optionsElement.appendChild(button);
+        });
+      }
+
+      function selectAnswer(selected, correct) {
+        const options = document.querySelectorAll(".option");
+        options.forEach((option) => {
+          option.style.pointerEvents = "none"; // Disable further clicks
+          if (option.textContent === correct) {
+            option.style.backgroundColor = "#2ed573"; // Green for correct
+          } else if (option.textContent === selected) {
+            option.style.backgroundColor = "#ff4757"; // Red for incorrect
+          }
+        });
+        if (selected === correct) {
+          score++;
+        }
+        userAnswers.push({
+          question: selectedQuestions[currentQuestionIndex].question,
+          selected,
+          correct,
+        });
+        nextButton.style.display = "block"; // Show Next button
+        setTimeout(() => {
+          currentQuestionIndex++;
+
+          if (currentQuestionIndex < selectedQuestions.length) {
+            displayQuestion();
+            nextButton.style.display = "none"; // Ẩn nút Next
+          } else {
+            endQuiz();
+          }
+        }, 1000); // 0.2 giây
+      }
+
+      function endQuiz() {
+        clearInterval(timer);
+        questionElement.style.display = "none";
+        optionsElement.style.display = "none";
+        nextButton.style.display = "none";
+        resultContainer.style.display = "block";
+        scoreElement.textContent = `Điểm của bạn: ${score}/${userAnswers.length}`;
+        resultElement.innerHTML = userAnswers
+          .map(
+            (answer, index) => `
+        <div class="result-item">
+          <strong> Câu hỏi ${index + 1}:</strong> ${answer.question}<br>
+          <span class="${
+            answer.selected === answer.correct ? "correct" : "incorrect"
+          }">Trả lời: ${answer.selected}</span><br>
+          <span class="correct">Đáp án đúng: ${answer.correct}</span>
+        </div>
+      `
+          )
+          .join("");
+        backButton.style.display = "block";
+      }
+
+      function startTimer() {
+        timer = setInterval(() => {
+          timeLeft--;
+          timerElement.textContent = `Hết giờ: ${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            endQuiz();
+          }
+        }, 1000);
+      }
+
+      nextButton.addEventListener("click", () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < selectedQuestions.length) {
+          displayQuestion();
+          nextButton.style.display = "none"; // Hide Next button
+        } else {
+          endQuiz();
+        }
+      });
+
+      backButton.addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+
+      displayQuestion();
+      startTimer();
+    </script>
+  </body>
+</html>

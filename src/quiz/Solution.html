@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbit Quiz</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #333;
+         background: url("./img/mobile-space-bg.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center center;
+  background-color: #71c9e3;
+      }
+
+      .quiz-container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        width: 90%;
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      .question {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #444;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .option {
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f9f9f9;
+        font-size: 1.1em;
+      }
+
+      .option:hover {
+        background: #6a11cb;
+        color: #fff;
+        border-color: #6a11cb;
+        transform: scale(1.02);
+      }
+
+      .next-button {
+        width: 100%;
+        padding: 15px;
+        margin-top: 20px;
+        background: #2575fc;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .next-button:hover {
+        background: #6a11cb;
+      }
+
+      .timer {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        color: #ff4757;
+        font-weight: bold;
+      }
+
+      .score {
+        font-size: 2em;
+        margin-top: 20px;
+        color: #2ed573;
+      }
+
+      .result {
+        text-align: left;
+        margin-top: 20px;
+        max-height: 300px;
+        /* Limit height and make scrollable */
+        overflow-y: auto;
+        /* Add scrollbar if content overflows */
+        padding-right: 10px;
+        /* Add space for scrollbar */
+      }
+
+      .result-item {
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 10px;
+        background: #f1f2f6;
+      }
+
+      .correct {
+        color: #2ed573;
+      }
+
+      .incorrect {
+        color: #ff4757;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .quiz-container {
+          padding: 20px;
+        }
+
+        .question {
+          font-size: 1.2em;
+        }
+
+        .option {
+          font-size: 1em;
+        }
+
+        .next-button {
+          font-size: 1em;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="quiz-container" id="basic">
+      <h2>GIẢI PHÁP XỬ LÍ RÁC VŨ TRỤ</h2>
+      <div id="timer" class="timer">Thời gian: 60s</div>
+      <div id="question-container" class="question-container">
+        <div id="question" class="question"></div>
+        <div id="options" class="options"></div>
+        <button id="next-button" class="next-button">Tiếp</button>
+      </div>
+      <div id="result-container" class="result-container" style="display: none">
+        <div id="score" class="score"></div>
+        <div id="result" class="result"></div>
+        <button id="back" class="next-button">Quay lại</button>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          question:
+            "Mục tiêu chính của việc xử lí rác thải ngoài vũ trụ là gì?",
+          options: [
+            "Tăng số lượng vệ tinh",
+            "Giảm nguy cơ va chạm trong không gian",
+            "Tạo thêm rác vũ trụ",
+            "Thay đổi quỹ đạo Trái Đất",
+          ],
+          answer: "Giảm nguy cơ va chạm trong không gian",
+        },
+        {
+          question: "Giải pháp phổ biến để xử lí vệ tinh hết nhiệm vụ là gì?",
+          options: [
+            "Giữ nguyên quỹ đạo",
+            "Đẩy vào quỹ đạo cao hơn",
+            "Cho rơi vào khí quyển để cháy",
+            "Phá hủy bằng tên lửa",
+          ],
+          answer: "Cho rơi vào khí quyển để cháy",
+        },
+        {
+          question:
+            "Công nghệ nào dùng lưới hoặc tay robot để thu gom rác vũ trụ?",
+          options: [
+            "Vệ tinh quang học",
+            "Vệ tinh thu gom",
+            "Radar mặt đất",
+            "Tên lửa đẩy",
+          ],
+          answer: "Vệ tinh thu gom",
+        },
+        {
+          question:
+            "Laser mặt đất có thể hỗ trợ xử lí rác vũ trụ bằng cách nào?",
+          options: [
+            "Đốt cháy trực tiếp rác",
+            "Làm lệch quỹ đạo rác",
+            "Thu gom rác",
+            "Phân hủy rác thành khí",
+          ],
+          answer: "Làm lệch quỹ đạo rác",
+        },
+        {
+          question: "Giải pháp “hạ quỹ đạo có kiểm soát” nhằm mục đích gì?",
+          options: [
+            "Giữ rác trong không gian",
+            "Đưa rác ra ngoài hệ Mặt Trời",
+            "Đốt rác an toàn trong khí quyển",
+            "Tăng tốc độ rác",
+          ],
+          answer: "Đốt rác an toàn trong khí quyển",
+        },
+        {
+          question:
+            "Thiết bị nào giúp vệ tinh tự rơi khỏi quỹ đạo sau khi hết nhiệm vụ?",
+          options: ["Pin mặt trời", "Buồm khí động học", "Camera", "Ăng-ten"],
+          answer: "Buồm khí động học",
+        },
+        {
+          question: "Vì sao không thể thu gom toàn bộ rác vũ trụ cùng lúc?",
+          options: [
+            "Quá ít rác",
+            "Rác quá xa Trái Đất",
+            "Số lượng lớn và kích thước đa dạng",
+            "Thiếu vệ tinh",
+          ],
+          answer: "Số lượng lớn và kích thước đa dạng",
+        },
+        {
+          question: "Giải pháp phòng ngừa rác vũ trụ hiệu quả nhất là gì?",
+          options: [
+            "Thu gom sau khi xuất hiện",
+            "Giảm tạo rác ngay từ khi phóng",
+            "Phá hủy vệ tinh cũ",
+            "Tăng số lần phóng",
+          ],
+          answer: "Giảm tạo rác ngay từ khi phóng",
+        },
+        {
+          question: "Thiết kế vệ tinh dễ phân hủy giúp ích gì?",
+          options: [
+            "Tăng tuổi thọ vệ tinh",
+            "Giảm chi phí phóng",
+            "Giảm rác tồn tại lâu dài",
+            "Tăng khả năng va chạm",
+          ],
+          answer: "Giảm rác tồn tại lâu dài",
+        },
+        {
+          question:
+            "Cơ quan nào trên thế giới đang nghiên cứu xử lí rác vũ trụ?",
+          options: ["WHO", "UNESCO", "NASA và ESA", "FAO"],
+          answer: "NASA và ESA",
+        },
+        {
+          question:
+            "Giải pháp sử dụng nam châm để xử lí rác phù hợp với loại rác nào?",
+          options: ["Rác nhựa", "Rác kim loại", "Rác khí", "Rác sinh học"],
+          answer: "Rác kim loại",
+        },
+        {
+          question: "Việc theo dõi rác vũ trụ giúp ích gì cho xử lí?",
+          options: [
+            "Tăng số lượng rác",
+            "Xác định vị trí và tránh va chạm",
+            "Làm rác phát sáng",
+            "Tăng tốc độ rác",
+          ],
+          answer: "Xác định vị trí và tránh va chạm",
+        },
+        {
+          question: "Một vệ tinh thu gom rác thường cần yếu tố nào?",
+          options: [
+            "Nhiên liệu và điều khiển chính xác",
+            "Cánh máy bay",
+            "Dù rơi",
+            "Động cơ phản lực",
+          ],
+          answer: "Nhiên liệu và điều khiển chính xác",
+        },
+        {
+          question: "Vì sao không nên phá hủy rác vũ trụ bằng vũ khí?",
+          options: [
+            "Quá tốn thời gian",
+            "Tạo thêm nhiều mảnh rác nhỏ",
+            "Không hiệu quả",
+            "Không thể thực hiện",
+          ],
+          answer: "Tạo thêm nhiều mảnh rác nhỏ",
+        },
+        {
+          question: "Giải pháp “quỹ đạo nghĩa địa” dùng cho loại vệ tinh nào?",
+          options: [
+            "Vệ tinh thấp",
+            "Vệ tinh địa tĩnh",
+            "Vệ tinh quân sự",
+            "Vệ tinh thám hiểm",
+          ],
+          answer: "Vệ tinh địa tĩnh",
+        },
+        {
+          question: "Quỹ đạo nghĩa địa có tác dụng gì?",
+          options: [
+            "Tái sử dụng vệ tinh",
+            "Lưu trữ vệ tinh cũ an toàn",
+            "Đốt vệ tinh",
+            "Tăng va chạm",
+          ],
+          answer: "Lưu trữ vệ tinh cũ an toàn",
+        },
+        {
+          question: "Hợp tác quốc tế giúp xử lí rác vũ trụ như thế nào?",
+          options: [
+            "Tăng chi phí",
+            "Giảm hiệu quả",
+            "Chia sẻ dữ liệu và công nghệ",
+            "Giảm số vệ tinh",
+          ],
+          answer: "Chia sẻ dữ liệu và công nghệ",
+        },
+        {
+          question:
+            "Công nghệ AI có thể hỗ trợ xử lí rác vũ trụ bằng cách nào?",
+          options: [
+            "Trang trí vệ tinh",
+            "Dự đoán va chạm và quỹ đạo",
+            "Tạo thêm rác",
+            "Phóng vệ tinh mới",
+          ],
+          answer: "Dự đoán va chạm và quỹ đạo",
+        },
+        {
+          question: "Giải pháp giáo dục và luật pháp giúp ích gì?",
+          options: [
+            "Tăng rác vũ trụ",
+            "Giảm ý thức",
+            "Hạn chế tạo rác mới",
+            "Giảm vệ tinh",
+          ],
+          answer: "Hạn chế tạo rác mới",
+        },
+        {
+          question: "Vì sao xử lí rác vũ trụ cần chi phí lớn?",
+          options: [
+            "Công nghệ đơn giản",
+            "Môi trường không gian phức tạp",
+            "Rác ít",
+            "Thiếu nhân lực",
+          ],
+          answer: "Môi trường không gian phức tạp",
+        },
+        {
+          question: "Giải pháp nào thân thiện với môi trường nhất?",
+          options: [
+            "Phá hủy bằng vũ khí",
+            "Hạ quỹ đạo có kiểm soát",
+            "Tăng số vệ tinh",
+            "Bỏ mặc rác",
+          ],
+          answer: "Hạ quỹ đạo có kiểm soát",
+        },
+        {
+          question: "Việc tái sử dụng vệ tinh cũ có lợi ích gì?",
+          options: [
+            "Tăng rác",
+            "Giảm chi phí và rác vũ trụ",
+            "Tăng nguy hiểm",
+            "Không có lợi",
+          ],
+          answer: "Giảm chi phí và rác vũ trụ",
+        },
+        {
+          question: "Một giải pháp lâu dài cho rác vũ trụ là gì?",
+          options: [
+            "Thu gom thủ công",
+            "Thiết kế vệ tinh bền vững",
+            "Phá hủy hàng loạt",
+            "Tăng tần suất phóng",
+          ],
+          answer: "Thiết kế vệ tinh bền vững",
+        },
+        {
+          question: "Xử lí rác vũ trụ góp phần bảo vệ điều gì?",
+          options: [
+            "Khí hậu Trái Đất",
+            "An toàn không gian và công nghệ",
+            "Địa hình Trái Đất",
+            "Thời tiết",
+          ],
+          answer: "An toàn không gian và công nghệ",
+        },
+        {
+          question: "Giải pháp nào kết hợp nhiều công nghệ khác nhau?",
+          options: [
+            "Giải pháp đơn lẻ",
+            "Giải pháp tổng hợp",
+            "Giải pháp tạm thời",
+            "Giải pháp bỏ qua",
+          ],
+          answer: "Giải pháp tổng hợp",
+        },
+      ];
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let timeLeft = 60;
+      let timer;
+      const selectedQuestions = getRandomQuestions(questions, 20); // lấy 20 âu hỏi ngẫu nhiên
+      const userAnswers = []; // Store user's answers
+
+      const timerElement = document.getElementById("timer");
+      const questionElement = document.getElementById("question");
+      const optionsElement = document.getElementById("options");
+      const nextButton = document.getElementById("next-button");
+      const resultContainer = document.getElementById("result-container");
+      const scoreElement = document.getElementById("score");
+      const resultElement = document.getElementById("result");
+      const backButton = document.getElementById("back");
+      const basicQuizz = document.getElementById("basic");
+
+      function getRandomQuestions(questions, count) {
+        const shuffled = questions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+      }
+
+      function displayQuestion() {
+        const question = selectedQuestions[currentQuestionIndex];
+        questionElement.textContent = question.question;
+        optionsElement.innerHTML = "";
+        question.options.forEach((option) => {
+          const button = document.createElement("div");
+          button.textContent = option;
+          button.classList.add("option");
+          button.addEventListener("click", () =>
+            selectAnswer(option, question.answer)
+          );
+          optionsElement.appendChild(button);
+        });
+      }
+
+      function selectAnswer(selected, correct) {
+        const options = document.querySelectorAll(".option");
+        options.forEach((option) => {
+          option.style.pointerEvents = "none"; // Disable further clicks
+          if (option.textContent === correct) {
+            option.style.backgroundColor = "#2ed573"; // Green for correct
+          } else if (option.textContent === selected) {
+            option.style.backgroundColor = "#ff4757"; // Red for incorrect
+          }
+        });
+        if (selected === correct) {
+          score++;
+        }
+        userAnswers.push({
+          question: selectedQuestions[currentQuestionIndex].question,
+          selected,
+          correct,
+        });
+        nextButton.style.display = "block"; // Show Next button
+        setTimeout(() => {
+          currentQuestionIndex++;
+
+          if (currentQuestionIndex < selectedQuestions.length) {
+            displayQuestion();
+            nextButton.style.display = "none"; // Ẩn nút Next
+          } else {
+            endQuiz();
+          }
+        }, 1000); // 0.2 giây
+      }
+
+      function endQuiz() {
+        clearInterval(timer);
+        questionElement.style.display = "none";
+        optionsElement.style.display = "none";
+        nextButton.style.display = "none";
+        resultContainer.style.display = "block";
+        scoreElement.textContent = `Điểm của bạn: ${score}/${userAnswers.length}`;
+        resultElement.innerHTML = userAnswers
+          .map(
+            (answer, index) => `
+        <div class="result-item">
+          <strong> Câu hỏi ${index + 1}:</strong> ${answer.question}<br>
+          <span class="${
+            answer.selected === answer.correct ? "correct" : "incorrect"
+          }">Trả lời: ${answer.selected}</span><br>
+          <span class="correct">Đáp án đúng: ${answer.correct}</span>
+        </div>
+      `
+          )
+          .join("");
+        backButton.style.display = "block";
+      }
+
+      function startTimer() {
+        timer = setInterval(() => {
+          timeLeft--;
+          timerElement.textContent = `Hết giờ: ${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            endQuiz();
+          }
+        }, 1000);
+      }
+
+      nextButton.addEventListener("click", () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < selectedQuestions.length) {
+          displayQuestion();
+          nextButton.style.display = "none"; // Hide Next button
+        } else {
+          endQuiz();
+        }
+      });
+
+      backButton.addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+
+      displayQuestion();
+      startTimer();
+    </script>
+  </body>
+</html>

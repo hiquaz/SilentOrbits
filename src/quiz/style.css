@@ -1,0 +1,208 @@
+/* ---------------- Made by Joy James ---------------- */
+
+/*--------------------------------------------------------------
+General
+--------------------------------------------------------------*/
+* {
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Montserrat Alternates', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+/*-- Background Image --*/
+body {
+  padding: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  background: url("./img/mobile-space-bg.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center center;
+  background-color: #71c9e3;
+}
+
+@media only screen and (min-width: 800px) {
+  body {
+    padding: 0;
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: url("./img/space-bg.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center center;
+    background-color: #71c9e3;
+  }
+}
+
+/*--------------------------------------------------------------
+Section Title
+--------------------------------------------------------------*/
+#section-title-container {
+  width: fit-content;
+  max-width: 80vw;
+  padding: 2em;
+  color: #fff;
+  margin: 0 auto 20px auto;
+}
+
+#section-title-container h1 {
+  font-size: 30px;
+}
+
+#section-title-container p {
+  font-size: 1.1em;
+}
+
+@media only screen and (min-width: 800px) {
+  #section-title-container h1 {
+    font-size: 40px;
+  }
+
+  #section-title-container p {
+    font-size: 1.4em;
+  }
+}
+/*--------------------------------------------------------------
+Quiz
+--------------------------------------------------------------*/
+/*-- Quiz Container --*/
+.container {
+  width: fit-content;
+  max-width: 70vw;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 2em;
+  box-shadow: 0 0 10px 0 #5d5d5d;
+  margin: 0 auto 1.5em auto;
+}
+
+#question {
+  font-size: 1.3em;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/*-- Planet Image --*/
+#planet-container img {
+  width: 100%;
+  height: auto;
+}
+
+#planet-container {
+  width: 40%;
+  margin: -80px auto 0 auto;
+  max-width: 165px;
+  max-height: 165px;
+}
+
+/*-- Answer buttons --*/
+.btn-grid {
+  display: grid;
+  grid-template-rows: repeat(4, auto);
+  margin: 15px 0;
+  row-gap: 15px;
+}
+
+@media only screen and (min-width: 800px) {
+  .btn-grid {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    column-gap: 20px;
+    row-gap: 15px;
+  }
+}
+
+.btn {
+  background-color: transparent;
+  border: 2px solid #000061;
+  border-radius: 5px;
+  padding: 10px 20px;
+  width: 100%;
+  font-size: 0.9em;
+  color: #000061;
+  font-weight: bolder;
+  transition: .3s;
+  cursor: pointer;
+  margin: 0 auto;
+  min-width: 120px;
+}
+
+a {
+  color: #000061;
+  text-decoration: none;
+}
+
+.btn a {
+  color: #000061;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background-color: #000061;
+  border-color: #000061;
+}
+
+.btn:hover a {
+  color: #fff;
+}
+
+.btn:hover {
+  background-color: #000061;
+  color: #fff;
+  border-color: #000061;
+}
+
+/*-- These are the answer colors that will display once asnwer is submitted --*/
+.btn.correct {
+  background-color: #00cc00;
+  color: #fff;
+  border-color: #00cc00;
+}
+
+.btn.wrong {
+  background-color: #cc0000;
+  color: #fff;
+  border-color: #cc0000;
+}
+
+/*-- Controls --*/
+
+#controls button {
+  background-color: #000061;
+  color: #fff;
+  border: none;
+  transition: .3s;
+  width: fit-content;
+  padding: 15px 45px;
+}
+
+#controls button:hover {
+  background-color: #0000ea;
+}
+
+.orange-btn {
+  background-color: #ffa500 !important;
+}
+
+.orange-btn:hover {
+  background-color: #ffc04d !important;
+}
+
+/* Hides buttons */
+.hide {
+  display: none;
+}

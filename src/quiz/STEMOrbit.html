@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbit Quiz</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #333;
+         background: url("./img/mobile-space-bg.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center center;
+  background-color: #71c9e3;
+      }
+
+      .quiz-container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        width: 90%;
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      .question {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #444;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .option {
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f9f9f9;
+        font-size: 1.1em;
+      }
+
+      .option:hover {
+        background: #6a11cb;
+        color: #fff;
+        border-color: #6a11cb;
+        transform: scale(1.02);
+      }
+
+      .next-button {
+        width: 100%;
+        padding: 15px;
+        margin-top: 20px;
+        background: #2575fc;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .next-button:hover {
+        background: #6a11cb;
+      }
+
+      .timer {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        color: #ff4757;
+        font-weight: bold;
+      }
+
+      .score {
+        font-size: 2em;
+        margin-top: 20px;
+        color: #2ed573;
+      }
+
+      .result {
+        text-align: left;
+        margin-top: 20px;
+        max-height: 300px;
+        /* Limit height and make scrollable */
+        overflow-y: auto;
+        /* Add scrollbar if content overflows */
+        padding-right: 10px;
+        /* Add space for scrollbar */
+      }
+
+      .result-item {
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 10px;
+        background: #f1f2f6;
+      }
+
+      .correct {
+        color: #2ed573;
+      }
+
+      .incorrect {
+        color: #ff4757;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .quiz-container {
+          padding: 20px;
+        }
+
+        .question {
+          font-size: 1.2em;
+        }
+
+        .option {
+          font-size: 1em;
+        }
+
+        .next-button {
+          font-size: 1em;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="quiz-container" id="basic">
+      <h2>NHẬN THỨC MÔI TRƯỜNG VÀ GIÁO DỤC STEM VỀ RÁC VŨ TRỤ</h2>
+      <div id="timer" class="timer">Thời gian: 60s</div>
+      <div id="question-container" class="question-container">
+        <div id="question" class="question"></div>
+        <div id="options" class="options"></div>
+        <button id="next-button" class="next-button">Tiếp</button>
+      </div>
+      <div id="result-container" class="result-container" style="display: none">
+        <div id="score" class="score"></div>
+        <div id="result" class="result"></div>
+        <button id="back" class="next-button">Quay lại</button>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          question:
+            "Rác vũ trụ ảnh hưởng như thế nào đến môi trường không gian?",
+          options: [
+            "Gây ô nhiễm ánh sáng",
+            "Làm tăng nguy cơ va chạm trong không gian",
+            "Làm nóng Trái Đất",
+            "Không gây ảnh hưởng",
+          ],
+          answer: "Làm tăng nguy cơ va chạm trong không gian",
+        },
+        {
+          question: "Vì sao cần nâng cao nhận thức về rác vũ trụ cho học sinh?",
+          options: [
+            "Để hiểu rõ nguy cơ từ không gian",
+            "Để bảo vệ các vệ tinh",
+            "Để phát triển tư duy khoa học",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question:
+            "Giáo dục STEM giúp học sinh hiểu về rác vũ trụ bằng cách nào?",
+          options: [
+            "Học qua lý thuyết khô khan",
+            "Học qua mô hình, thí nghiệm và công nghệ",
+            "Chỉ học thuộc lòng",
+            "Không liên quan",
+          ],
+          answer: "Học qua mô hình, thí nghiệm và công nghệ",
+        },
+        {
+          question: "Rác vũ trụ có thể gây nguy hiểm gì cho Trái Đất?",
+          options: [
+            "Gây nhiễu sóng vệ tinh",
+            "Ảnh hưởng đến thông tin liên lạc",
+            "Nguy cơ rơi xuống Trái Đất",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Nhận thức môi trường trong không gian có ý nghĩa gì?",
+          options: [
+            "Bảo vệ tài nguyên không gian",
+            "Giảm rác vũ trụ trong tương lai",
+            "Phát triển bền vững",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "STEM là viết tắt của các lĩnh vực nào?",
+          options: [
+            "Science, Technology, Engineering, Mathematics",
+            "Space, Technology, Energy, Math",
+            "Science, Transport, Energy, Math",
+            "Space, Technology, Engineering, Music",
+          ],
+          answer: "Science, Technology, Engineering, Mathematics",
+        },
+        {
+          question:
+            "Học sinh có thể tham gia giải quyết vấn đề rác vũ trụ bằng cách nào?",
+          options: [
+            "Nghiên cứu và đề xuất ý tưởng",
+            "Tham gia dự án STEM",
+            "Sử dụng công nghệ AI",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Rác vũ trụ hình thành chủ yếu từ đâu?",
+          options: [
+            "Thiên thạch tự nhiên",
+            "Vệ tinh hỏng và mảnh vỡ tên lửa",
+            "Mây khí trong không gian",
+            "Hành tinh nhỏ",
+          ],
+          answer: "Vệ tinh hỏng và mảnh vỡ tên lửa",
+        },
+        {
+          question: "Giáo dục STEM giúp hình thành kỹ năng nào cho học sinh?",
+          options: [
+            "Tư duy phản biện",
+            "Giải quyết vấn đề",
+            "Làm việc nhóm",
+            "Tất cả các kỹ năng trên",
+          ],
+          answer: "Tất cả các kỹ năng trên",
+        },
+        {
+          question: "Vì sao rác vũ trụ được xem là vấn đề môi trường?",
+          options: [
+            "Gây ô nhiễm không gian",
+            "Ảnh hưởng đến hệ sinh thái không gian",
+            "Gây nguy hiểm lâu dài",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "AI có thể hỗ trợ giáo dục STEM về rác vũ trụ như thế nào?",
+          options: [
+            "Mô phỏng quỹ đạo rác vũ trụ",
+            "Phân tích dữ liệu va chạm",
+            "Trực quan hóa mô hình 3D",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question:
+            "Mô phỏng 3D giúp nâng cao nhận thức môi trường bằng cách nào?",
+          options: [
+            "Giúp dễ hình dung",
+            "Tăng tính trực quan",
+            "Tạo hứng thú học tập",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Học sinh học được gì khi tìm hiểu rác vũ trụ?",
+          options: [
+            "Kiến thức khoa học",
+            "Ý thức bảo vệ môi trường",
+            "Trách nhiệm với tương lai",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question:
+            "Rác vũ trụ có thể ảnh hưởng đến nhiệm vụ không gian như thế nào?",
+          options: [
+            "Làm hỏng vệ tinh",
+            "Đe dọa tàu vũ trụ",
+            "Gây nguy hiểm cho phi hành gia",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Giáo dục STEM về rác vũ trụ hướng đến mục tiêu nào?",
+          options: [
+            "Nâng cao nhận thức",
+            "Khuyến khích sáng tạo",
+            "Giải quyết vấn đề thực tế",
+            "Tất cả các mục tiêu trên",
+          ],
+          answer: "Tất cả các mục tiêu trên",
+        },
+        {
+          question: "Hành động nào giúp giảm rác vũ trụ trong tương lai?",
+          options: [
+            "Thiết kế vệ tinh bền vững",
+            "Thu gom rác vũ trụ",
+            "Quản lý phóng vệ tinh",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Vì sao rác vũ trụ khó xử lý?",
+          options: [
+            "Chuyển động nhanh",
+            "Số lượng lớn",
+            "Chi phí cao",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question:
+            "STEM giúp học sinh tiếp cận vấn đề rác vũ trụ theo cách nào?",
+          options: ["Liên ngành", "Thực tiễn", "Sáng tạo", "Tất cả các ý trên"],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Nhận thức về rác vũ trụ giúp học sinh điều gì?",
+          options: [
+            "Ý thức trách nhiệm toàn cầu",
+            "Hiểu về môi trường không gian",
+            "Quan tâm đến khoa học",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Rác vũ trụ là vấn đề của riêng quốc gia nào?",
+          options: [
+            "Một quốc gia",
+            "Các nước phát triển",
+            "Các nước có vệ tinh",
+            "Vấn đề toàn cầu",
+          ],
+          answer: "Vấn đề toàn cầu",
+        },
+        {
+          question:
+            "Giáo dục STEM giúp học sinh chuẩn bị cho tương lai như thế nào?",
+          options: [
+            "Tiếp cận công nghệ mới",
+            "Phát triển tư duy khoa học",
+            "Giải quyết vấn đề toàn cầu",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question:
+            "Vai trò của học sinh trong bảo vệ môi trường không gian là gì?",
+          options: [
+            "Nâng cao nhận thức",
+            "Đề xuất ý tưởng sáng tạo",
+            "Lan tỏa thông điệp",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Ứng dụng STEM về rác vũ trụ mang lại lợi ích gì?",
+          options: [
+            "Học đi đôi với hành",
+            "Hiểu vấn đề thực tế",
+            "Tăng hứng thú học tập",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question:
+            "Nhận thức môi trường không gian cần được giáo dục từ khi nào?",
+          options: [
+            "Khi trưởng thành",
+            "Ở bậc đại học",
+            "Ngay từ khi còn học sinh",
+            "Không cần thiết",
+          ],
+          answer: "Ngay từ khi còn học sinh",
+        },
+      ];
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let timeLeft = 60;
+      let timer;
+      const selectedQuestions = getRandomQuestions(questions, 20); // lấy 20 âu hỏi ngẫu nhiên
+      const userAnswers = []; // Store user's answers
+
+      const timerElement = document.getElementById("timer");
+      const questionElement = document.getElementById("question");
+      const optionsElement = document.getElementById("options");
+      const nextButton = document.getElementById("next-button");
+      const resultContainer = document.getElementById("result-container");
+      const scoreElement = document.getElementById("score");
+      const resultElement = document.getElementById("result");
+      const backButton = document.getElementById("back");
+      const basicQuizz = document.getElementById("basic");
+
+      function getRandomQuestions(questions, count) {
+        const shuffled = questions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+      }
+
+      function displayQuestion() {
+        const question = selectedQuestions[currentQuestionIndex];
+        questionElement.textContent = question.question;
+        optionsElement.innerHTML = "";
+        question.options.forEach((option) => {
+          const button = document.createElement("div");
+          button.textContent = option;
+          button.classList.add("option");
+          button.addEventListener("click", () =>
+            selectAnswer(option, question.answer)
+          );
+          optionsElement.appendChild(button);
+        });
+      }
+
+      function selectAnswer(selected, correct) {
+        const options = document.querySelectorAll(".option");
+        options.forEach((option) => {
+          option.style.pointerEvents = "none"; // Disable further clicks
+          if (option.textContent === correct) {
+            option.style.backgroundColor = "#2ed573"; // Green for correct
+          } else if (option.textContent === selected) {
+            option.style.backgroundColor = "#ff4757"; // Red for incorrect
+          }
+        });
+        if (selected === correct) {
+          score++;
+        }
+        userAnswers.push({
+          question: selectedQuestions[currentQuestionIndex].question,
+          selected,
+          correct,
+        });
+        nextButton.style.display = "block"; // Show Next button
+        setTimeout(() => {
+          currentQuestionIndex++;
+
+          if (currentQuestionIndex < selectedQuestions.length) {
+            displayQuestion();
+            nextButton.style.display = "none"; // Ẩn nút Next
+          } else {
+            endQuiz();
+          }
+        }, 1000); // 0.2 giây
+      }
+
+      function endQuiz() {
+        clearInterval(timer);
+        questionElement.style.display = "none";
+        optionsElement.style.display = "none";
+        nextButton.style.display = "none";
+        resultContainer.style.display = "block";
+        scoreElement.textContent = `Điểm của bạn: ${score}/${userAnswers.length}`;
+        resultElement.innerHTML = userAnswers
+          .map(
+            (answer, index) => `
+        <div class="result-item">
+          <strong> Câu hỏi ${index + 1}:</strong> ${answer.question}<br>
+          <span class="${
+            answer.selected === answer.correct ? "correct" : "incorrect"
+          }">Trả lời: ${answer.selected}</span><br>
+          <span class="correct">Đáp án đúng: ${answer.correct}</span>
+        </div>
+      `
+          )
+          .join("");
+        backButton.style.display = "block";
+      }
+
+      function startTimer() {
+        timer = setInterval(() => {
+          timeLeft--;
+          timerElement.textContent = `Hết giờ: ${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            endQuiz();
+          }
+        }, 1000);
+      }
+
+      nextButton.addEventListener("click", () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < selectedQuestions.length) {
+          displayQuestion();
+          nextButton.style.display = "none"; // Hide Next button
+        } else {
+          endQuiz();
+        }
+      });
+
+      backButton.addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+
+      displayQuestion();
+      startTimer();
+    </script>
+  </body>
+</html>

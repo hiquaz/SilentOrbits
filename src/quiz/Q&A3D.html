@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbit Quiz</title>
+    <style>
+      body {
+        font-family: "Arial", sans-serif;
+        background: linear-gradient(135deg, #6a11cb, #2575fc);
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        color: #333;
+         background: url("./img/mobile-space-bg.png");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+  background-position: center center;
+  background-color: #71c9e3;
+      }
+
+      .quiz-container {
+        background: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        max-width: 600px;
+        width: 90%;
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      .question {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        font-weight: bold;
+        color: #444;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .option {
+        padding: 15px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f9f9f9;
+        font-size: 1.1em;
+      }
+
+      .option:hover {
+        background: #6a11cb;
+        color: #fff;
+        border-color: #6a11cb;
+        transform: scale(1.02);
+      }
+
+      .next-button {
+        width: 100%;
+        padding: 15px;
+        margin-top: 20px;
+        background: #2575fc;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.2em;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .next-button:hover {
+        background: #6a11cb;
+      }
+
+      .timer {
+        font-size: 1.5em;
+        margin-bottom: 20px;
+        color: #ff4757;
+        font-weight: bold;
+      }
+
+      .score {
+        font-size: 2em;
+        margin-top: 20px;
+        color: #2ed573;
+      }
+
+      .result {
+        text-align: left;
+        margin-top: 20px;
+        max-height: 300px;
+        /* Limit height and make scrollable */
+        overflow-y: auto;
+        /* Add scrollbar if content overflows */
+        padding-right: 10px;
+        /* Add space for scrollbar */
+      }
+
+      .result-item {
+        margin-bottom: 15px;
+        padding: 10px;
+        border-radius: 10px;
+        background: #f1f2f6;
+      }
+
+      .correct {
+        color: #2ed573;
+      }
+
+      .incorrect {
+        color: #ff4757;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .quiz-container {
+          padding: 20px;
+        }
+
+        .question {
+          font-size: 1.2em;
+        }
+
+        .option {
+          font-size: 1em;
+        }
+
+        .next-button {
+          font-size: 1em;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="quiz-container" id="basic">
+      <h2>ỨNG DỤNG CÔNG NGHỆ AI VÀ MÔ PHỎNG 3D</h2>
+      <div id="timer" class="timer">Thời gian: 60s</div>
+      <div id="question-container" class="question-container">
+        <div id="question" class="question"></div>
+        <div id="options" class="options"></div>
+        <button id="next-button" class="next-button">Tiếp</button>
+      </div>
+      <div id="result-container" class="result-container" style="display: none">
+        <div id="score" class="score"></div>
+        <div id="result" class="result"></div>
+        <button id="back" class="next-button">Quay lại</button>
+      </div>
+    </div>
+
+    <script>
+      const questions = [
+        {
+          question: "Công nghệ AI là gì?",
+          options: [
+            "Trí tuệ nhân tạo cho phép máy móc học và suy nghĩ",
+            "Một loại robot hình người",
+            "Phần mềm đồ họa 3D",
+            "Thiết bị điện tử thông thường",
+          ],
+          answer: "Trí tuệ nhân tạo cho phép máy móc học và suy nghĩ",
+        },
+        {
+          question: "AI có thể hỗ trợ con người trong lĩnh vực nào sau đây?",
+          options: [
+            "Y tế",
+            "Giáo dục",
+            "Môi trường",
+            "Tất cả các lĩnh vực trên",
+          ],
+          answer: "Tất cả các lĩnh vực trên",
+        },
+        {
+          question: "Mô phỏng 3D là gì?",
+          options: [
+            "Vẽ tranh bằng tay",
+            "Tạo hình ảnh không gian ba chiều trên máy tính",
+            "Chụp ảnh vệ tinh",
+            "Lập trình website",
+          ],
+          answer: "Tạo hình ảnh không gian ba chiều trên máy tính",
+        },
+        {
+          question: "Công nghệ mô phỏng 3D giúp ích gì trong học tập?",
+          options: [
+            "Làm bài kiểm tra nhanh hơn",
+            "Giúp học sinh dễ hình dung các mô hình phức tạp",
+            "Thay thế giáo viên",
+            "Chỉ dùng để giải trí",
+          ],
+          answer: "Giúp học sinh dễ hình dung các mô hình phức tạp",
+        },
+        {
+          question: "AI có thể kết hợp với mô phỏng 3D để làm gì?",
+          options: [
+            "Dự đoán và mô phỏng các tình huống",
+            "Chơi game",
+            "Tăng tốc độ mạng",
+            "Lưu trữ dữ liệu",
+          ],
+          answer: "Dự đoán và mô phỏng các tình huống",
+        },
+        {
+          question: "Trong lĩnh vực môi trường, AI và 3D giúp gì?",
+          options: [
+            "Trang trí hình ảnh",
+            "Mô phỏng và phân tích tác động môi trường",
+            "Tạo trò chơi",
+            "In ấn tài liệu",
+          ],
+          answer: "Mô phỏng và phân tích tác động môi trường",
+        },
+        {
+          question: "Ứng dụng AI trong không gian vũ trụ có thể làm gì?",
+          options: [
+            "Dự đoán quỹ đạo vệ tinh",
+            "Phân tích rác vũ trụ",
+            "Cảnh báo va chạm",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Mô phỏng 3D giúp hiển thị rác vũ trụ như thế nào?",
+          options: [
+            "Dưới dạng văn bản",
+            "Dưới dạng bảng số liệu",
+            "Dưới dạng hình ảnh trực quan",
+            "Không thể hiển thị",
+          ],
+          answer: "Dưới dạng hình ảnh trực quan",
+        },
+        {
+          question: "AI học từ dữ liệu bằng cách nào?",
+          options: [
+            "Tự suy nghĩ không cần dữ liệu",
+            "Học từ dữ liệu được cung cấp",
+            "Học từ cảm xúc con người",
+            "Học từ sách giấy",
+          ],
+          answer: "Học từ dữ liệu được cung cấp",
+        },
+        {
+          question: "Công nghệ 3D thường được sử dụng trong lĩnh vực nào?",
+          options: [
+            "Giáo dục",
+            "Y học",
+            "Kiến trúc",
+            "Tất cả các lĩnh vực trên",
+          ],
+          answer: "Tất cả các lĩnh vực trên",
+        },
+        {
+          question: "AI giúp mô phỏng 3D trở nên thông minh hơn bằng cách nào?",
+          options: [
+            "Dự đoán hành vi và thay đổi theo thời gian",
+            "Tăng độ sáng màn hình",
+            "Giảm kích thước file",
+            "Thay đổi màu sắc",
+          ],
+          answer: "Dự đoán hành vi và thay đổi theo thời gian",
+        },
+        {
+          question: "Ứng dụng AI và 3D giúp học sinh phát triển kỹ năng nào?",
+          options: [
+            "Tư duy logic",
+            "Khả năng sáng tạo",
+            "Kỹ năng công nghệ",
+            "Tất cả các kỹ năng trên",
+          ],
+          answer: "Tất cả các kỹ năng trên",
+        },
+        {
+          question: "Mô phỏng 3D giúp giảm rủi ro như thế nào?",
+          options: [
+            "Thử nghiệm trước khi áp dụng thực tế",
+            "Làm mọi thứ nhanh hơn",
+            "Không cần kiểm tra",
+            "Thay thế hoàn toàn thực tế",
+          ],
+          answer: "Thử nghiệm trước khi áp dụng thực tế",
+        },
+        {
+          question: "AI có thể dự đoán điều gì trong mô hình 3D?",
+          options: [
+            "Chuyển động của vật thể",
+            "Khả năng va chạm",
+            "Xu hướng thay đổi",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Ứng dụng AI và 3D trong giao thông giúp gì?",
+          options: [
+            "Dự đoán ùn tắc",
+            "Mô phỏng tai nạn",
+            "Đề xuất giải pháp",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "AI có thể hỗ trợ giáo viên như thế nào?",
+          options: [
+            "Tạo bài giảng trực quan",
+            "Phân tích kết quả học tập",
+            "Cá nhân hóa việc học",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Mô phỏng 3D giúp học sinh hiểu bài tốt hơn vì?",
+          options: [
+            "Có hình ảnh sinh động",
+            "Dễ quan sát",
+            "Dễ tương tác",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "AI có thể giúp bảo vệ môi trường như thế nào?",
+          options: [
+            "Phân tích dữ liệu môi trường",
+            "Dự đoán rủi ro",
+            "Đề xuất giải pháp",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Ứng dụng AI và 3D trong y học dùng để làm gì?",
+          options: [
+            "Mô phỏng cơ thể người",
+            "Hỗ trợ chẩn đoán",
+            "Lập kế hoạch phẫu thuật",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "AI có thể thay thế hoàn toàn con người không?",
+          options: ["Có", "Không", "Chỉ trong giải trí", "Chỉ trong học tập"],
+          answer: "Không",
+        },
+        {
+          question: "Mô phỏng 3D thường được tạo ra bằng gì?",
+          options: [
+            "Phần mềm máy tính",
+            "Bút chì",
+            "Sách giáo khoa",
+            "Thiết bị âm thanh",
+          ],
+          answer: "Phần mềm máy tính",
+        },
+        {
+          question: "AI giúp tăng hiệu quả mô phỏng 3D bằng cách nào?",
+          options: [
+            "Tự động phân tích dữ liệu",
+            "Cập nhật theo thời gian thực",
+            "Đưa ra dự đoán",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+        {
+          question: "Ứng dụng AI và 3D phù hợp nhất với mục tiêu nào?",
+          options: [
+            "Học tập và nghiên cứu",
+            "Giải quyết vấn đề thực tế",
+            "Nâng cao nhận thức",
+            "Tất cả các mục tiêu trên",
+          ],
+          answer: "Tất cả các mục tiêu trên",
+        },
+        {
+          question: "AI và mô phỏng 3D giúp học sinh hứng thú hơn vì?",
+          options: [
+            "Tính trực quan cao",
+            "Dễ tương tác",
+            "Sinh động",
+            "Tất cả các ý trên",
+          ],
+          answer: "Tất cả các ý trên",
+        },
+      ];
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let timeLeft = 60;
+      let timer;
+      const selectedQuestions = getRandomQuestions(questions, 20); // lấy 20 âu hỏi ngẫu nhiên
+      const userAnswers = []; // Store user's answers
+
+      const timerElement = document.getElementById("timer");
+      const questionElement = document.getElementById("question");
+      const optionsElement = document.getElementById("options");
+      const nextButton = document.getElementById("next-button");
+      const resultContainer = document.getElementById("result-container");
+      const scoreElement = document.getElementById("score");
+      const resultElement = document.getElementById("result");
+      const backButton = document.getElementById("back");
+      const basicQuizz = document.getElementById("basic");
+
+      function getRandomQuestions(questions, count) {
+        const shuffled = questions.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, count);
+      }
+
+      function displayQuestion() {
+        const question = selectedQuestions[currentQuestionIndex];
+        questionElement.textContent = question.question;
+        optionsElement.innerHTML = "";
+        question.options.forEach((option) => {
+          const button = document.createElement("div");
+          button.textContent = option;
+          button.classList.add("option");
+          button.addEventListener("click", () =>
+            selectAnswer(option, question.answer)
+          );
+          optionsElement.appendChild(button);
+        });
+      }
+
+      function selectAnswer(selected, correct) {
+        const options = document.querySelectorAll(".option");
+        options.forEach((option) => {
+          option.style.pointerEvents = "none"; // Disable further clicks
+          if (option.textContent === correct) {
+            option.style.backgroundColor = "#2ed573"; // Green for correct
+          } else if (option.textContent === selected) {
+            option.style.backgroundColor = "#ff4757"; // Red for incorrect
+          }
+        });
+        if (selected === correct) {
+          score++;
+        }
+        userAnswers.push({
+          question: selectedQuestions[currentQuestionIndex].question,
+          selected,
+          correct,
+        });
+        nextButton.style.display = "block"; // Show Next button
+        setTimeout(() => {
+          currentQuestionIndex++;
+
+          if (currentQuestionIndex < selectedQuestions.length) {
+            displayQuestion();
+            nextButton.style.display = "none"; // Ẩn nút Next
+          } else {
+            endQuiz();
+          }
+        }, 1000); // 0.2 giây
+      }
+
+      function endQuiz() {
+        clearInterval(timer);
+        questionElement.style.display = "none";
+        optionsElement.style.display = "none";
+        nextButton.style.display = "none";
+        resultContainer.style.display = "block";
+        scoreElement.textContent = `Điểm của bạn: ${score}/${userAnswers.length}`;
+        resultElement.innerHTML = userAnswers
+          .map(
+            (answer, index) => `
+        <div class="result-item">
+          <strong> Câu hỏi ${index + 1}:</strong> ${answer.question}<br>
+          <span class="${
+            answer.selected === answer.correct ? "correct" : "incorrect"
+          }">Trả lời: ${answer.selected}</span><br>
+          <span class="correct">Đáp án đúng: ${answer.correct}</span>
+        </div>
+      `
+          )
+          .join("");
+        backButton.style.display = "block";
+      }
+
+      function startTimer() {
+        timer = setInterval(() => {
+          timeLeft--;
+          timerElement.textContent = `Hết giờ: ${timeLeft}s`;
+          if (timeLeft <= 0) {
+            clearInterval(timer);
+            endQuiz();
+          }
+        }, 1000);
+      }
+
+      nextButton.addEventListener("click", () => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < selectedQuestions.length) {
+          displayQuestion();
+          nextButton.style.display = "none"; // Hide Next button
+        } else {
+          endQuiz();
+        }
+      });
+
+      backButton.addEventListener("click", () => {
+        window.location.href = "index.html";
+      });
+
+      displayQuestion();
+      startTimer();
+    </script>
+  </body>
+</html>
